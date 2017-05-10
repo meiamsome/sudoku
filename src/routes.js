@@ -1,11 +1,15 @@
 import React from 'react';
-import { Router, Route, IndexRoute } from 'react-router';
+import {
+  BrowserRouter as Router,
+  Route
+} from 'react-router-dom'
 
+import Sudoku from './components/sudoku';
 
 const Routes = (props) => (
   <Router {...props}>
     <Route path="/">
-      <IndexRoute />
+      <Route path="/sudoku/" component={Sudoku} />
     </Route>
   </Router>
 );
