@@ -19,7 +19,6 @@ class Navigation extends React.Component {
         </NavDropdown>
       )
     }
-    console.log(this.props);
     return (
       <Navbar>
         <Navbar.Header>
