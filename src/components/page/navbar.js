@@ -5,17 +5,18 @@ import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 
 class Navigation extends React.Component {
   render() {
+    console.log("Render", this.props.account);
     let rhs = (
       <NavItem href="/login/">Login</NavItem>
     );
-    if(this.props.account.username != null) {
+    if(this.props.account.login.username !== null) {
       rhs = (
-        <NavDropdown eventKey={3} title="{this.props.account.username}" id="basic-nav-dropdown">
+        <NavDropdown eventKey={3} title={this.props.account.login.username} id="basic-nav-dropdown">
           <MenuItem eventKey={3.1}>Action</MenuItem>
           <MenuItem eventKey={3.2}>Another action</MenuItem>
           <MenuItem eventKey={3.3}>Something else here</MenuItem>
           <MenuItem divider />
-          <MenuItem eventKey={3.4}>Log Out</MenuItem>
+          <MenuItem href="/logout/">Log Out</MenuItem>
         </NavDropdown>
       )
     }
