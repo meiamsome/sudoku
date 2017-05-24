@@ -7,3 +7,8 @@ export function changeSudoku(target) {
     target: target,
   }
 }
+
+// Account actions
+
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
