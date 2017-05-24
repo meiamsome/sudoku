@@ -1,11 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-export default class Sudoku extends React.Component {
-  constructor(...props) {
+class Sudoku extends React.Component {
+  constructor({grid, ...props}) {
     super(...props);
-    this.state = {
-      grid: [...Array(9).keys()].map(_ => [...Array(9).keys()].map(i => i)),
-    };
+    this.grid = grid;
   }
 
   render() {
@@ -13,7 +12,7 @@ export default class Sudoku extends React.Component {
       <table>
         <tbody>
           {
-            this.state.grid.map((row, rindex) => {
+            this.grid.map((row, rindex) => {
               return (
                 <tr key={rindex}>
                   {
@@ -32,3 +31,12 @@ export default class Sudoku extends React.Component {
     );
   }
 };
+
+Sudoku = connect((state) => {
+  return {
+    grid: state.sudoku,
+  }
+})(Sudoku);
+
+
+export default Sudoku;
