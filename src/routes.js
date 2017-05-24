@@ -4,13 +4,16 @@ import {
   Route
 } from 'react-router-dom'
 
+import Template from './components/page';
 import Sudoku from './components/sudoku';
 
 const Routes = (props) => (
   <Router {...props}>
-    <Route path="/">
-      <Route path="/sudoku/" component={Sudoku} />
-    </Route>
+    <Template>
+      <Route path="/">
+        <Route path="/sudoku/" component={Sudoku} />
+      </Route>
+    </Template>
   </Router>
 );
 
