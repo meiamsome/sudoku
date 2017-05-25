@@ -21,7 +21,6 @@ export function attemptLogin(username, password) {
       type: LOGIN_ATTEMPT,
       username: username,
     });
-    // TODO: Request login
     return fetch("/api/account/login/", {
       method: "POST",
       headers: {
