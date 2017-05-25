@@ -17,11 +17,6 @@ function encode_utf8(s) {
   return unescape(encodeURIComponent(s));
 }
 
-function client_encode(url, body) {
-  let shared_secret = encode_utf8(url + "\0" + body + settings.client_secret);
-  return crypto.createHash('sha512').update(shared_secret).digest('hex');
-}
-
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
