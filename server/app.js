@@ -1,4 +1,5 @@
 "use strict";
+const bodyParser = require('body-parser');
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
@@ -19,9 +20,7 @@ app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:htt
 // Serve static assets
 app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
-function encode_utf8(s) {
-  return unescape(encodeURIComponent(s));
-}
+app.use(bodyParser.json());
 
 app.use('/api', api(db, settings));
 

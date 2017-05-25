@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import {
   LOGIN_ATTEMPT,
   LOGIN_SUCCESS,
+  LOGIN_FAILURE,
   LOGOUT,
 } from './actions.js';
 
@@ -26,6 +27,10 @@ function loginReducer(state = {
       return Object.assign({}, state, {
         attempting_login: false,
         username: action.username,
+      });
+    case LOGIN_FAILURE:
+      return Object.assign({}, state, {
+        attempting_login: false,
       });
     case LOGOUT:
       return Object.assign({}, state, {

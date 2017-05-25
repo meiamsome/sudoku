@@ -6,4 +6,7 @@
     hash: 'sha256',
     rounds: 10,
   };
+  exports.jwt_options = {
+    secret: 'X%8VVT9C[s<]sPEF',
+  }
 })(module.exports);

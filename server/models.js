@@ -1,13 +1,18 @@
+const crypto = require('crypto');
 const sequelize = require('sequelize');
 
 const Sequelize = sequelize.Sequelize;
 
 
-function createAccountModel(database) {
+function createAccountModel(database, settings) {
   const Account = database.define('account', {
-    username: Sequelize.STRING,
+    username: {
+      type: Sequelize.STRING,
+      unique: true,
+    },
     email: {
       type: Sequelize.STRING,
+      unique: true,
       validate: {
         isEmail: true,
       },
