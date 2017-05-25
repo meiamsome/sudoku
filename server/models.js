@@ -1,3 +1,6 @@
+const sequelize = require('sequelize');
+
+const Sequelize = sequelize.Sequelize;
 
 
 function createAccountModel(database) {
