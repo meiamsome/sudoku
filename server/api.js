@@ -17,7 +17,10 @@ module.exports = (database, settings) => {
   var router = express.Router();
 
   const jwt_restrictor = express_jwt(settings.jwt_options).unless({
-    path: ['/api/account/login/']
+    path: [
+      '/api/account/login/',
+      '/api/account/register/',
+    ]
   });
 
   router.use(jwt_restrictor);
@@ -70,7 +73,49 @@ module.exports = (database, settings) => {
         });
       }
     });
-  })
+  });
+
+  router.post('/account/register/', (req, res) => {
+    req.checkBody("username", "username is required").isLength({min: 1});
+    req.checkBody("email", "email is required").isLength({min: 1});
+    req.checkBody("email", "email malformatted").isEmail();
+    req.checkBody("password", "password is required").isLength({min: 1});
+
+    var errors = req.validationErrors();
+    if(errors) {
+      res.json({
+        status: "error",
+        reason: errors,
+      });
+      return;
+    }
+
+    Account.findOne({
+      where: {
+        username: req.body.username,
+      }
+    }).then(user => {
+      if(user !== null) {
+        res.json({
+          status: "error",
+          reason: "username already exists",
+        })
+      } else {
+        Account.create({
+          username: req.body.username,
+          email: req.body.email,
+          password_data: req.body.password,
+        }).then(user => {
+          res.json({
+            status: "ok",
+            token: jwt.sign({
+              username: req.body.username,
+            }, settings.jwt_options.secret),
+          });
+        });
+      }
+    });
+  });
 
   return router;
 }

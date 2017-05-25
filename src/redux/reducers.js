@@ -4,6 +4,8 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
   LOGOUT,
+  REGISTER_SUCCESS,
+  REGISTER_FAILURE,
 } from './actions.js';
 
 function sudokuState(state = [...Array(9).keys()].map(_ => [...Array(9).keys()].map(i => i)), action) {
@@ -24,6 +26,7 @@ function loginReducer(state = {
         attempting_login: true,
       });
     case LOGIN_SUCCESS:
+    case REGISTER_SUCCESS:
       return Object.assign({}, state, {
         attempting_login: false,
         username: action.username,
@@ -35,6 +38,10 @@ function loginReducer(state = {
     case LOGOUT:
       return Object.assign({}, state, {
         username: null,
+      });
+    case REGISTER_FAILURE:
+      return Object.assign({}, state, {
+        attempting_login: false,
       });
     default:
       return state;
