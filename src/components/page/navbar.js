@@ -3,21 +3,28 @@ import { connect } from 'react-redux';
 
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 
+import { logout } from '../../redux/actions';
+
 class Navigation extends React.Component {
   render() {
     console.log("Render", this.props.account);
     let rhs = (
-      <NavItem href="/login/">Login</NavItem>
+      <Nav pullRight>
+        <NavItem href="/login/">Login</NavItem>
+        <NavItem href="/register/">Register</NavItem>
+      </Nav>
     );
     if(this.props.account.login.username !== null) {
       rhs = (
-        <NavDropdown eventKey={3} title={this.props.account.login.username} id="basic-nav-dropdown">
-          <MenuItem eventKey={3.1}>Action</MenuItem>
-          <MenuItem eventKey={3.2}>Another action</MenuItem>
-          <MenuItem eventKey={3.3}>Something else here</MenuItem>
-          <MenuItem divider />
-          <MenuItem href="/logout/">Log Out</MenuItem>
-        </NavDropdown>
+        <Nav pullRight>
+          <NavDropdown eventKey={3} title={this.props.account.login.username} id="basic-nav-dropdown">
+            <MenuItem eventKey={3.1}>Action</MenuItem>
+            <MenuItem eventKey={3.2}>Another action</MenuItem>
+            <MenuItem eventKey={3.3}>Something else here</MenuItem>
+            <MenuItem divider />
+            <MenuItem onClick={this.props.logout}>Log Out</MenuItem>
+          </NavDropdown>
+        </Nav>
       )
     }
     return (
@@ -27,9 +34,7 @@ class Navigation extends React.Component {
             <a href="/">Sudoku</a>
           </Navbar.Brand>
         </Navbar.Header>
-        <Nav pullRight>
-          {rhs}
-        </Nav>
+        {rhs}
       </Navbar>
     )
   }
@@ -38,6 +43,12 @@ class Navigation extends React.Component {
 Navigation = connect((state) => {
   return {
     account: state.account,
+  }
+}, (dispatch) => {
+  return {
+    logout: () => {
+      dispatch(logout())
+    }
   }
 })(Navigation);
 

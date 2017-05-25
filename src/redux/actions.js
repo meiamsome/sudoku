@@ -28,3 +28,9 @@ export function attemptLogin(username, password) {
     }));
   };
 }
+
+export function logout() {
+  return {
+    type: LOGOUT
+  }
+}
