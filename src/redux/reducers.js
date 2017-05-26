@@ -97,6 +97,7 @@ function loginReducer(state = {
       return Object.assign({}, state, {
         status: LOGIN_STATE.LOGGED_OUT,
         username: null,
+        token: null,
       });
     case REGISTER_ATTEMPT:
       return Object.assign({}, state, {
