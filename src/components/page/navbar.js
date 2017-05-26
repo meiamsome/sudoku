@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link }  from 'react-router-dom';
 
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 
@@ -10,8 +11,8 @@ class Navigation extends React.Component {
   render() {
     let rhs = (
       <Nav pullRight>
-        <NavItem href="/login/">Login</NavItem>
-        <NavItem href="/register/">Register</NavItem>
+        <NavItem><Link to="/login/">Login</Link></NavItem>
+        <NavItem><Link to="/register/">Register</Link></NavItem>
       </Nav>
     );
     if(this.props.account.login.status === LOGIN_STATE.LOGGED_IN) {
