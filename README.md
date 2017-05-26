@@ -3,6 +3,8 @@
 This is a website for playing sudoku. A live version is availaible at
 [https://sudoku.meiamso.me/](https://sudoku.meiamso.me/)
 
+The repository for this project can be found [here](https://github.com/meiamsome/sudoku)
+
 To run, first install dependecies with npm:
 
     npm install .
