@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import {
   LOAD_SUDOKU,
+  SET_DAILY,
   LOGIN_ATTEMPT,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -19,11 +20,18 @@ function sudokuState(state = {
 }, action) {
   switch (action.type) {
     case LOAD_SUDOKU:
+      if(state[action.target] !== undefined) {
+        return state;
+      }
       let update = {};
       update[action.target] = {
         status: SUDOKU_STATE.LOADING,
       }
       return Object.assign({}, state, update);
+    case SET_DAILY:
+      return Object.assign({}, state, {
+        daily: state[action.target],
+      });
     default:
       return state;
   }

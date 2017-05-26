@@ -20,6 +20,7 @@ module.exports = (database, settings) => {
     path: [
       '/api/account/login/',
       '/api/account/register/',
+      /^\/api\/sudoku\//,
     ]
   });
 
@@ -114,6 +115,15 @@ module.exports = (database, settings) => {
           });
         });
       }
+    });
+  });
+
+  router.get('/sudoku/daily/', (req, res) => {
+    var now = new Date();
+    var day_string = now.toISOString().split('T')[0];
+    res.json({
+      status: "ok",
+      sudoku: day_string,
     });
   });
 

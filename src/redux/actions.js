@@ -1,12 +1,40 @@
 import { browserHistory } from 'react-router';
 
 export const LOAD_SUDOKU = 'LOAD_SUDOKU';
+export const UPDATE_SUDOKU = 'UPDATE_SUDOKU';
+export const SET_DAILY = 'SET_DAILY';
 
 export function load_sudoku(target) {
-  return {
-    type: LOAD_SUDOKU,
-    target: target,
+  console.log(target);
+  if(target === "daily") return (dispatch) => {
+    fetch('/api/sudoku/daily/')
+      .then(resp => resp.json()).then(data => {
+        if(data.status === "ok") {
+          dispatch(load_sudoku(data.sudoku));
+          dispatch({
+            type: SET_DAILY,
+            target: data.sudoku,
+          });
+        }
+        //TODO: Handle error situation.
+      });
   }
+  return (dispatch) => {
+    dispatch({
+      type: LOAD_SUDOKU,
+      target: target,
+    });
+    fetch('/api/sudoku/' + target + '/')
+      .then(resp => resp.json()).then(data => {
+        if(data.status === "ok") {
+          dispatch({
+            type: UPDATE_SUDOKU,
+            data: data,
+          });
+        }
+        //TODO: Handle errors
+      });
+  };
 }
 
 // Account actions
