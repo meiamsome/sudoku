@@ -8,8 +8,7 @@ class Sidebar extends React.Component {
       <div>
         <h3>Play Sudoku!</h3>
         <ul>
-          <li><Link to="/sudoku/daily/">Today&rsquo;s Sudoku</Link></li>
-          <li><Link to="/sudoku/random/">Random Sudoku</Link></li>
+          <li><Link to="/">Home</Link></li>
         </ul>
       </div>
     );

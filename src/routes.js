@@ -10,7 +10,7 @@ import Home from './components/homepage';
 import Sudoku from './components/sudoku';
 import { Login, Register } from './components/accounts';
 
-import login_required from './redux/actions';
+import { login_required, load_sudoku } from './redux/actions';
 
 function requireLogin(store, nextState, replace) {
   console.log(nextState.location.pathname);
@@ -25,6 +25,11 @@ function requireNoLogin(store, nextState, replace) {
   if(store.account.login.username !== null) {
     replace('/');
   }
+}
+
+function todays_sudoku(nextState, replace) {
+  console.log(nextState, replace);
+  load_sudoku('daily', replace);
 }
 
 

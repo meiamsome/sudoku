@@ -3,7 +3,6 @@ import {
   LOAD_SUDOKU,
   UPDATE_SUDOKU,
   SET_CELL,
-  SET_DAILY,
   LOGIN_ATTEMPT,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -50,10 +49,6 @@ function sudokuState(state = {
         grid: old_grid.substr(0, index) + action.value + old_grid.substr(index + 1),
       });
       return Object.assign({}, state, update);
-    case SET_DAILY:
-      return Object.assign({}, state, {
-        daily: state[action.target],
-      });
     default:
       return state;
   }

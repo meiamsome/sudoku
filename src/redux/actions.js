@@ -17,21 +17,7 @@ function authHeader(getState) {
   return headers;
 }
 
-export function load_sudoku(target) {
-  console.log(target);
-  if(target === "daily") return (dispatch) => {
-    fetch('/api/sudoku/daily/')
-      .then(resp => resp.json()).then(data => {
-        if(data.status === "ok") {
-          dispatch(load_sudoku(data.sudoku));
-          dispatch({
-            type: SET_DAILY,
-            target: data.sudoku,
-          });
-        }
-        //TODO: Handle error situation.
-      });
-  }
+export function load_sudoku(target, replace) {
   return (dispatch, getState) => {
     dispatch({
       type: LOAD_SUDOKU,
