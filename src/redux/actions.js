@@ -57,6 +57,11 @@ export function attemptLogin(username, password) {
           reason: data.reason,
         });
       }
+    }).catch(function(reason) {
+      dispatch({
+        type: LOGIN_FAILURE,
+        reason: "An error has occured: " + reason,
+      })
     });
   };
 }
@@ -101,6 +106,11 @@ export function register(username, email, password) {
           reason: data.reason,
         });
       }
-    });
+    }).catch(function(reason) {
+      dispatch({
+        type: REGISTER_FAILURE,
+        reason: "An error has occured: " + reason,
+      })
+    });;
   }
 }
