@@ -6,6 +6,7 @@ import {
 import { Provider } from 'react-redux';
 
 import Template from './components/page';
+import Home from './components/homepage';
 import Sudoku from './components/sudoku';
 import { Login, Register } from './components/accounts';
 
@@ -31,6 +32,7 @@ const Routes = ({store}) => (
   <Provider store={store}>
     <Router>
       <Template>
+        <Route exact path="/" component={Home} />
         <Route path="/sudoku/" component={Sudoku} />
         <Route
           path="/login/"
