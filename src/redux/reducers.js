@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import {
+  LOAD_SUDOKU,
   LOGIN_ATTEMPT,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -9,8 +10,20 @@ import {
   REGISTER_FAILURE,
 } from './actions.js';
 
-function sudokuState(state = [...Array(9).keys()].map(_ => [...Array(9).keys()].map(i => i)), action) {
+export const SUDOKU_STATE = {
+  LOADING: 0,
+}
+
+function sudokuState(state = {
+
+}, action) {
   switch (action.type) {
+    case LOAD_SUDOKU:
+      let update = {};
+      update[action.target] = {
+        status: SUDOKU_STATE.LOADING,
+      }
+      return Object.assign({}, state, update);
     default:
       return state;
   }

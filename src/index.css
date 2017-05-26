@@ -3,3 +3,19 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+table.sudoku td {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  font-size: 30px;
+  border: 1px solid black;
+}
+
+table.sudoku input {
+  width: 50px;
+  height: 50px;
+  border: none;
+  background: none;
+  text-align: center;
+}

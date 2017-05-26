@@ -33,7 +33,7 @@ const Routes = ({store}) => (
     <Router>
       <Template>
         <Route exact path="/" component={Home} />
-        <Route path="/sudoku/" component={Sudoku} />
+        <Route path="/sudoku/:id/" component={Sudoku} />
         <Route
           path="/login/"
           component={Login} />

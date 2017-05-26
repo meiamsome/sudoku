@@ -1,10 +1,10 @@
 import { browserHistory } from 'react-router';
 
-export const CHANGE_SUDOKU = 'CHANGE_SUDOKU';
+export const LOAD_SUDOKU = 'LOAD_SUDOKU';
 
-export function changeSudoku(target) {
+export function load_sudoku(target) {
   return {
-    type: CHANGE_SUDOKU,
+    type: LOAD_SUDOKU,
     target: target,
   }
 }
