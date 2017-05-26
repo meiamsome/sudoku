@@ -4,17 +4,17 @@ import { connect } from 'react-redux';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 
 import { logout } from '../../redux/actions';
+import { LOGIN_STATE } from '../../redux/reducers';
 
 class Navigation extends React.Component {
   render() {
-    console.log("Render", this.props.account);
     let rhs = (
       <Nav pullRight>
         <NavItem href="/login/">Login</NavItem>
         <NavItem href="/register/">Register</NavItem>
       </Nav>
     );
-    if(this.props.account.login.username !== null) {
+    if(this.props.account.login.status === LOGIN_STATE.LOGGED_IN) {
       rhs = (
         <Nav pullRight>
           <NavDropdown eventKey={3} title={this.props.account.login.username} id="basic-nav-dropdown">

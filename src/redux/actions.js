@@ -1,3 +1,4 @@
+import { browserHistory } from 'react-router';
 
 export const CHANGE_SUDOKU = 'CHANGE_SUDOKU';
 
@@ -13,10 +14,13 @@ export function changeSudoku(target) {
 export const LOGIN_REQUIRED = 'LOGIN_REQUIRED';
 
 export function login_required(attempted_page) {
-  return {
-    type: LOGIN_REQUIRED,
-    page: attempted_page,
-  };
+  return (dispatch) => {
+    dispatch({
+      type: LOGIN_REQUIRED,
+      page: attempted_page,
+    });
+    browserHistory.push('/login/');
+  }
 }
 
 export const LOGIN_ATTEMPT = 'LOGIN_ATTEMPT';
@@ -25,7 +29,7 @@ export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 export const LOGOUT = 'LOGOUT';
 
 export function attemptLogin(username, password) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
       type: LOGIN_ATTEMPT,
       username: username,

@@ -7,11 +7,14 @@ import {
   Form,
   FormControl,
   FormGroup,
+  Modal,
 } from 'react-bootstrap';
 
 import { connect } from 'react-redux';
 
-import { attemptLogin, register } from '../../redux/actions';
+import { attemptLogin, logout, register } from '../../redux/actions';
+
+import { LOGIN_STATE } from '../../redux/reducers';
 
 class Login extends React.Component {
   constructor(...props) {
@@ -23,7 +26,7 @@ class Login extends React.Component {
   }
 
   handleChange(name, ev) {
-    if(!this.props.attempting_login)
+    if(this.props.account_status === LOGIN_STATE.LOGGED_OUT)
       this.setState({[name]: ev.target.value});
   }
 
@@ -44,7 +47,7 @@ class Login extends React.Component {
               type="text"
               placeholder="Username"
               value={this.state.username}
-              disabled={this.props.attempting_login}
+              disabled={this.props.account_status !== LOGIN_STATE.LOGGED_OUT}
               onChange={this.handleChange.bind(this, "username")}
             />
           </Col>
@@ -58,7 +61,7 @@ class Login extends React.Component {
               type="password"
               placeholder="password"
               value={this.state.password}
-              disabled={this.props.attempting_login}
+              disabled={this.props.account_status !== LOGIN_STATE.LOGGED_OUT}
               onChange={this.handleChange.bind(this, "password")}
             />
           </Col>
@@ -70,6 +73,17 @@ class Login extends React.Component {
             </Button>
           </Col>
         </FormGroup>
+        <Modal show={this.props.account_status === LOGIN_STATE.LOGGING_IN_ERROR} onHide={this.props.logout}>
+          <Modal.Header closeButton>
+            <Modal.Title>Failed to login</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {this.props.error}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.props.logout}>Close</Button>
+          </Modal.Footer>
+        </Modal>
       </Form>
     );
   }
@@ -77,13 +91,17 @@ class Login extends React.Component {
 
 Login = connect((state) => {
   return {
-    attempting_login: state.account.login.attempting_login,
+    account_status: state.account.login.status,
+    error: state.account.login.error,
   };
 }, (dispatch) => {
   return {
     login: (username, password) => {
       dispatch(attemptLogin(username, password));
     },
+    logout: () => {
+      dispatch(logout());
+    }
   }
 })(Login);
 
@@ -98,7 +116,7 @@ class Register extends React.Component {
   }
 
   handleChange(name, ev) {
-    if(!this.props.attempting_login)
+    if(this.props.account_status === LOGIN_STATE.LOGGED_OUT)
       this.setState({[name]: ev.target.value});
   }
 
@@ -122,7 +140,7 @@ class Register extends React.Component {
               type="text"
               placeholder="Username"
               value={this.state.username}
-              disabled={this.props.attempting_login}
+              disabled={this.props.account_status !== LOGIN_STATE.LOGGED_OUT}
               onChange={this.handleChange.bind(this, "username")}
             />
           </Col>
@@ -136,7 +154,7 @@ class Register extends React.Component {
               type="email"
               placeholder="email"
               value={this.state.email}
-              disabled={this.props.attempting_login}
+              disabled={this.props.account_status !== LOGIN_STATE.LOGGED_OUT}
               onChange={this.handleChange.bind(this, "email")}
             />
           </Col>
@@ -150,7 +168,7 @@ class Register extends React.Component {
               type="password"
               placeholder="password"
               value={this.state.password}
-              disabled={this.props.attempting_login}
+              disabled={this.props.account_status !== LOGIN_STATE.LOGGED_OUT}
               onChange={this.handleChange.bind(this, "password")}
             />
           </Col>
@@ -162,6 +180,17 @@ class Register extends React.Component {
             </Button>
           </Col>
         </FormGroup>
+        <Modal show={this.props.account_status === LOGIN_STATE.REGISTERING_ERROR} onHide={this.props.logout}>
+          <Modal.Header closeButton>
+            <Modal.Title>Failed to login</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {this.props.error}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.props.logout}>Close</Button>
+          </Modal.Footer>
+        </Modal>
       </Form>
     );
   }
@@ -169,7 +198,8 @@ class Register extends React.Component {
 
 Register = connect((state) => {
   return {
-    attempting_login: state.account.login.attempting_login,
+    account_status: state.account.login.status,
+    error: state.account.login.error,
   };
 }, (dispatch) => {
   return {
@@ -179,6 +209,9 @@ Register = connect((state) => {
         email,
         password));
     },
+    logout: () => {
+      dispatch(logout());
+    }
   }
 })(Register);
 
