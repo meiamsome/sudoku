@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { load_sudoku } from '../../redux/actions';
+import { load_sudoku, set_cell } from '../../redux/actions';
 import { SUDOKU_STATE } from '../../redux/reducers';
 
 class Sudoku extends React.Component {
@@ -26,16 +26,35 @@ class Sudoku extends React.Component {
     }
   }
 
+  update_cell(x, y, ev) {
+    if(this.me.status === SUDOKU_STATE.LOADED && /[1-9]/.test(ev.target.value)) {
+      this.props.set_cell(this.props.match.params.id, x, y, ev.target.value);
+    }
+  }
+
   cell(x, y) {
-    if(this.me.initial[x][y] === 0) {
+    if(this.me.initial[y * 9 + x] === "0") {
+      var value = this.me.grid[y * 9 + x];
+      if(value == "0") {
+        value = "";
+      }
       return (
-        <td key={y}><input type="text" value={this.me.grid[x][y]} /></td>
+        <td key={x}><input type="text"
+          value={value} onChange={this.update_cell.bind(this, x, y)}/></td>
       )
     } else {
       return (
-        <td key={y}><input type="text" value={this.me.initial[x][y]} /></td>
+        <td key={x} className="initial">{this.me.initial[y * 9 + x]}</td>
       )
     }
+  }
+
+  format_date(date) {
+    var month = [
+      "January", "February", "March", "April", "May", "June", "July",
+      "August", "September", "October", "November", "December",
+    ][date.getUTCMonth()];
+    return date.getUTCDate() + " " + month + " " + date.getUTCFullYear();
   }
 
   render() {
@@ -50,7 +69,7 @@ class Sudoku extends React.Component {
 
     return (
       <div>
-        <h1>Easy Sudoku #1</h1>
+        <h1>Sudoku For {this.format_date(this.me.date)}</h1>
         <table className="sudoku">
           <tbody>
             {
@@ -79,7 +98,8 @@ Sudoku = connect((state) => {
   return {
     load_sudoku: (sudoku_id) => {
       dispatch(load_sudoku(sudoku_id));
-    }
+    },
+    set_cell: (sudoku_id, x, y, value) => dispatch(set_cell(x, y, value)),
   }
 })(Sudoku);
 

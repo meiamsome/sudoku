@@ -3,6 +3,7 @@ const sequelize = require('sequelize');
 
 const Sequelize = sequelize.Sequelize;
 
+const models = {};
 
 function createAccountModel(database, settings) {
   const Account = database.define('account', {
@@ -59,9 +60,50 @@ function createAccountModel(database, settings) {
     return true;
   }
 
+  models.Account = Account;
+
   return Account;
+}
+
+function createSudokuModel(database, settings) {
+  const Sudoku = database.define('sudoku', {
+    date: {
+      type: Sequelize.DATE,
+      primaryKey: true,
+    },
+    board: Sequelize.STRING(81),
+    difficulty: Sequelize.FLOAT,
+  }, {
+    timestamps: false,
+  });
+
+  models.Sudoku = Sudoku;
+
+  models.Sudoku.belongsTo(models.Account, {
+    as: 'first_solver',
+  });
+
+  return Sudoku;
+}
+
+function createSudokuProgressModel(database, settings) {
+  models.SudokuProgress = database.define('sudoku_progress', {
+    solved: Sequelize.BOOLEAN,
+    board: Sequelize.STRING(81),
+  })
+
+  models.Sudoku.belongsToMany(models.Account, {
+    through: models.SudokuProgress,
+  })
+  models.Account.belongsToMany(models.Sudoku, {
+    through: models.SudokuProgress,
+  });
+
+  return models.SudokuProgress;
 }
 
 module.exports = {
   createAccountModel: createAccountModel,
+  createSudokuModel: createSudokuModel,
+  createSudokuProgressModel: createSudokuProgressModel,
 }

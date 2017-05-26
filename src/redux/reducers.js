@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import {
   LOAD_SUDOKU,
+  UPDATE_SUDOKU,
+  SET_CELL,
   SET_DAILY,
   LOGIN_ATTEMPT,
   LOGIN_SUCCESS,
@@ -13,6 +15,8 @@ import {
 
 export const SUDOKU_STATE = {
   LOADING: 0,
+  LOADED: 1,
+  COMPLETE: 2,
 }
 
 function sudokuState(state = {
@@ -23,10 +27,27 @@ function sudokuState(state = {
       if(state[action.target] !== undefined) {
         return state;
       }
-      let update = {};
+      var update = {};
       update[action.target] = {
         status: SUDOKU_STATE.LOADING,
       }
+      return Object.assign({}, state, update);
+    case UPDATE_SUDOKU:
+      var update = {};
+      update[action.target] = {
+        status: SUDOKU_STATE.LOADED,
+        initial: action.data.initial_board,
+        grid: action.data.progress,
+        date: new Date(action.data.date),
+      }
+      return Object.assign({}, state, update);
+    case SET_CELL:
+      var update = {};
+      var old_grid = state[action.target].grid;
+      var index = action.y * 9 + action.x;
+      update[action.target] = Object.assign({}, state[action.target], {
+        grid: old_grid.substr(0, index) + action.value + old_grid.substr(index + 1),
+      });
       return Object.assign({}, state, update);
     case SET_DAILY:
       return Object.assign({}, state, {

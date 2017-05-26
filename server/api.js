@@ -1,8 +1,11 @@
+"use strict";
+
 const express = require('express');
 const express_jwt = require('express-jwt');
 const express_validator = require('express-validator');
 const jwt = require('jsonwebtoken');
 const sequelize = require('sequelize');
+const sudoku_module = require('sudoku');
 
 const Sequelize = sequelize.Sequelize;
 
@@ -11,6 +14,8 @@ const models = require('./models');
 module.exports = (database, settings) => {
   // Set up our sequelize models
   const Account = models.createAccountModel(database, settings);
+  const Sudoku = models.createSudokuModel(database, settings);
+  const SudokuProgress = models.createSudokuModel(database, settings);
 
   database.sync();
 
@@ -20,7 +25,7 @@ module.exports = (database, settings) => {
     path: [
       '/api/account/login/',
       '/api/account/register/',
-      /^\/api\/sudoku\//,
+      /^\/api\/sudoku\/[^\/]*\/$/,
     ]
   });
 
@@ -125,6 +130,52 @@ module.exports = (database, settings) => {
       status: "ok",
       sudoku: day_string,
     });
+  });
+
+  function get_sudoku(date) {
+    return Sudoku.findOne({
+      date: date,
+    }).then(sudoku => {
+      if(sudoku === null) {
+        let sudoku_arr = sudoku_module.makepuzzle();
+        let as_string = sudoku_arr.map((v) => v === null ? 0 : (v + 1)).join("");
+        Sudoku.create({
+          date: date,
+          board: as_string,
+          difficulty: sudoku_module.ratepuzzle(sudoku),
+        }).then(() => get_sudoku(date));
+      } else {
+        return sudoku;
+      }
+    });
+  }
+
+  router.get(/\/sudoku\/([0-9]{4}-[0-9]{2}-[0-9]{2})\//, (req, res) => {
+    var date = new Date(req.params[0]);
+    if(date < settings.start_date || date > new Date()) {
+      res.status(404).json({
+        status: "error",
+        reason: "No such Sudoku.",
+      });
+    } else {
+      get_sudoku(date).then(sudoku => {
+        res.json({
+          status: "ok",
+          initial_board: sudoku.board,
+          progress: sudoku.board,
+          date: sudoku.date,
+        })
+      }).catch(err => {
+        res.json({
+          status: "error",
+          reason: "" + err,
+        })
+      })
+    }
+  });
+
+  router.post(/\/sudoku\/([0-9]{4}-[0-9]{2}-[0-9]{2})\/progress\//, (req, res) => {
+
   });
 
   return router;

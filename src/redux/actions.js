@@ -3,6 +3,7 @@ import { browserHistory } from 'react-router';
 export const LOAD_SUDOKU = 'LOAD_SUDOKU';
 export const UPDATE_SUDOKU = 'UPDATE_SUDOKU';
 export const SET_DAILY = 'SET_DAILY';
+export const SET_CELL = 'SET_CELL';
 
 export function load_sudoku(target) {
   console.log(target);
@@ -29,12 +30,25 @@ export function load_sudoku(target) {
         if(data.status === "ok") {
           dispatch({
             type: UPDATE_SUDOKU,
+            target: target,
             data: data,
           });
         }
         //TODO: Handle errors
       });
   };
+}
+
+export function set_cell(sudoku, x, y, value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CELL,
+      target: sudoku,
+      x: x,
+      y: y,
+      value: value,
+    });
+  }
 }
 
 // Account actions
@@ -139,6 +153,6 @@ export function register(username, email, password) {
         type: REGISTER_FAILURE,
         reason: "An error has occured: " + reason,
       })
-    });;
+    });
   }
 }

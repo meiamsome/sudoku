@@ -8,5 +8,6 @@
   };
   exports.jwt_options = {
     secret: 'X%8VVT9C[s<]sPEF',
-  }
+  };
+  exports.start_date = new Date("2017-01-01T00:00:00Z");
 })(module.exports);
