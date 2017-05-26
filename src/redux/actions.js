@@ -5,6 +5,18 @@ export const UPDATE_SUDOKU = 'UPDATE_SUDOKU';
 export const SET_DAILY = 'SET_DAILY';
 export const SET_CELL = 'SET_CELL';
 
+
+function isLoggedIn(getState) {
+  return getState().account.login.status === 3;
+}
+function authHeader(getState) {
+  var headers = {};
+  if(getState().account.login.token !== null) {
+    headers['Authorization'] = 'Bearer ' + getState().account.login.token;
+  }
+  return headers;
+}
+
 export function load_sudoku(target) {
   console.log(target);
   if(target === "daily") return (dispatch) => {
@@ -20,13 +32,14 @@ export function load_sudoku(target) {
         //TODO: Handle error situation.
       });
   }
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({
       type: LOAD_SUDOKU,
       target: target,
     });
-    fetch('/api/sudoku/' + target + '/')
-      .then(resp => resp.json()).then(data => {
+    fetch('/api/sudoku/' + target + '/', {
+      headers: authHeader(getState),
+    }).then(resp => resp.json()).then(data => {
         if(data.status === "ok") {
           dispatch({
             type: UPDATE_SUDOKU,
@@ -40,7 +53,7 @@ export function load_sudoku(target) {
 }
 
 export function set_cell(sudoku, x, y, value) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({
       type: SET_CELL,
       target: sudoku,
@@ -48,6 +61,19 @@ export function set_cell(sudoku, x, y, value) {
       y: y,
       value: value,
     });
+    if(isLoggedIn(getState)) {
+      fetch('/api/sudoku/' + sudoku + '/progress/', {
+        method: 'POST',
+        headers: {
+          ...authHeader(getState),
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          grid: getState().sudoku[sudoku].grid
+        }),
+      });
+    }
   }
 }
 

@@ -15,22 +15,24 @@ module.exports = (database, settings) => {
   // Set up our sequelize models
   const Account = models.createAccountModel(database, settings);
   const Sudoku = models.createSudokuModel(database, settings);
-  const SudokuProgress = models.createSudokuModel(database, settings);
+  const SudokuProgress = models.createSudokuProgressModel(database, settings);
 
   database.sync();
 
   var router = express.Router();
 
-  const jwt_restrictor = express_jwt(settings.jwt_options).unless({
+  router.use(express_jwt({
+    secret: settings.jwt_options.secret,
+    credentialsRequired: false,
+  }));;
+
+  router.use(express_jwt(settings.jwt_options).unless({
     path: [
       '/api/account/login/',
       '/api/account/register/',
       /^\/api\/sudoku\/[^\/]*\/$/,
     ]
-  });
-
-  router.use(jwt_restrictor);
-  router.use(express_validator());
+  }));
 
   router.use(function(err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
@@ -42,6 +44,8 @@ module.exports = (database, settings) => {
       next();
     }
   });
+
+  router.use(express_validator());
 
   router.get('/', (req, res) => {
     res.json({});
@@ -69,6 +73,7 @@ module.exports = (database, settings) => {
         res.json({
           status: "ok",
           token: jwt.sign({
+            accountId: user.id,
             username: req.body.username,
           }, settings.jwt_options.secret),
         });
@@ -115,6 +120,7 @@ module.exports = (database, settings) => {
           res.json({
             status: "ok",
             token: jwt.sign({
+              accountId: user.id,
               username: req.body.username,
             }, settings.jwt_options.secret),
           });
@@ -134,7 +140,9 @@ module.exports = (database, settings) => {
 
   function get_sudoku(date) {
     return Sudoku.findOne({
-      date: date,
+      where: {
+        date: date,
+      }
     }).then(sudoku => {
       if(sudoku === null) {
         let sudoku_arr = sudoku_module.makepuzzle();
@@ -142,7 +150,7 @@ module.exports = (database, settings) => {
         Sudoku.create({
           date: date,
           board: as_string,
-          difficulty: sudoku_module.ratepuzzle(sudoku),
+          difficulty: sudoku_module.ratepuzzle(sudoku_arr),
         }).then(() => get_sudoku(date));
       } else {
         return sudoku;
@@ -159,12 +167,30 @@ module.exports = (database, settings) => {
       });
     } else {
       get_sudoku(date).then(sudoku => {
-        res.json({
-          status: "ok",
-          initial_board: sudoku.board,
-          progress: sudoku.board,
-          date: sudoku.date,
-        })
+        if(req.user) {
+          SudokuProgress.findOne({
+            where: {
+              sudokuDate: sudoku.date,
+              accountId: req.user.accountId,
+            }
+          }).then(progress => {
+            res.json({
+              status: "ok",
+              first_solver: sudoku.firstSolverId,
+              initial_board: sudoku.board,
+              progress: progress === null ? sudoku.board : progress.board,
+              date: sudoku.date,
+            });
+          })
+        } else {
+          res.json({
+            status: "ok",
+            first_solver: sudoku.firstSolverId,
+            initial_board: sudoku.board,
+            progress: sudoku.board,
+            date: sudoku.date,
+          });
+        }
       }).catch(err => {
         res.json({
           status: "error",
@@ -175,7 +201,57 @@ module.exports = (database, settings) => {
   });
 
   router.post(/\/sudoku\/([0-9]{4}-[0-9]{2}-[0-9]{2})\/progress\//, (req, res) => {
+    req.checkBody("grid", "Grid should be 81 characters.").isLength({
+      min: 81,
+      max: 81,
+    }).matches(/[0-9]{81}/);
 
+    var errors = req.validationErrors();
+    if(errors) {
+      res.json({
+        status: "error",
+        reason: errors,
+      });
+      return;
+    }
+
+    get_sudoku(new Date(req.params[0])).then(sudoku => {
+      var solved = false;
+      if(/[1-9]{81}/.test(req.body.grid)) {
+        var format = req.body.grid.split("").map(v => v - 1);
+        if(sudoku_module.solvepuzzle(format) !== null) solved = true;
+        if(sudoku.firstSolverId === null) {
+          sudoku.firstSolverId = req.user.accountId;
+          sudoku.save();
+        }
+      }
+      SudokuProgress.find({
+        where: {
+          accountId: req.user.accountId,
+          sudokuDate: sudoku.date,
+        }
+      }).then(progress => {
+        if(progress === null) {
+          SudokuProgress.create({
+            accountId: req.user.accountId,
+            sudokuDate: sudoku.date,
+            board: req.body.grid,
+            solved: solved,
+          }).then(() => res.json({status: "ok"}));
+        } else {
+          if(progress.solved) {
+            res.json({
+              status: "error",
+              reason: "Cannot change a completed sudoku",
+            });
+            return;
+          }
+          progress.board = req.body.grid;
+          progress.solved = solved;
+          progress.save().then(() => res.json({status: "ok"}));
+        }
+      });
+    });
   });
 
   return router;

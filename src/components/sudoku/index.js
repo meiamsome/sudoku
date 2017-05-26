@@ -1,8 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { Link } from 'react-router-dom';
+
 import { load_sudoku, set_cell } from '../../redux/actions';
 import { SUDOKU_STATE } from '../../redux/reducers';
+
+function dateToURL(date) {
+  return "/sudoku/" + date.toISOString().split('T')[0] + "/";
+}
 
 class Sudoku extends React.Component {
   constructor(...props) {
@@ -27,8 +33,9 @@ class Sudoku extends React.Component {
   }
 
   update_cell(x, y, ev) {
-    if(this.me.status === SUDOKU_STATE.LOADED && /[1-9]/.test(ev.target.value)) {
-      this.props.set_cell(this.props.match.params.id, x, y, ev.target.value);
+    if(this.me.status === SUDOKU_STATE.LOADED && /^[1-9]?$/.test(ev.target.value)) {
+      this.props.set_cell(this.props.match.params.id, x, y,
+        ev.target.value === "" ? "0" : ev.target.value);
     }
   }
 
@@ -70,6 +77,8 @@ class Sudoku extends React.Component {
     return (
       <div>
         <h1>Sudoku For {this.format_date(this.me.date)}</h1>
+        <Link to={dateToURL(new Date(this.me.date.valueOf() - 86400000))}>previous</Link>
+        <Link to={dateToURL(new Date(this.me.date.valueOf() + 86400000))}>next</Link>
         <table className="sudoku">
           <tbody>
             {
@@ -85,6 +94,13 @@ class Sudoku extends React.Component {
             }
           </tbody>
         </table>
+        {
+          (this.me.first_solver !== null) ?
+            (
+              <p>First solved by {this.me.first_solver}</p>
+            )
+          : ""
+        }
       </div>
     );
   }
@@ -99,7 +115,7 @@ Sudoku = connect((state) => {
     load_sudoku: (sudoku_id) => {
       dispatch(load_sudoku(sudoku_id));
     },
-    set_cell: (sudoku_id, x, y, value) => dispatch(set_cell(x, y, value)),
+    set_cell: (sudoku_id, x, y, value) => dispatch(set_cell(sudoku_id, x, y, value)),
   }
 })(Sudoku);
 

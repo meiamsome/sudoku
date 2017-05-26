@@ -38,6 +38,7 @@ function sudokuState(state = {
         status: SUDOKU_STATE.LOADED,
         initial: action.data.initial_board,
         grid: action.data.progress,
+        first_solver: action.data.first_solver,
         date: new Date(action.data.date),
       }
       return Object.assign({}, state, update);
@@ -71,6 +72,7 @@ function loginReducer(state = {
   username: null,
   status: LOGIN_STATE.LOGGED_OUT,
   error: null,
+  token: null,
   destination: '/',
 }, action) {
   console.log(action);
@@ -84,6 +86,7 @@ function loginReducer(state = {
       return Object.assign({}, state, {
         status: LOGIN_STATE.LOGGED_IN,
         username: action.username,
+        token: action.token,
       });
     case LOGIN_FAILURE:
       return Object.assign({}, state, {
