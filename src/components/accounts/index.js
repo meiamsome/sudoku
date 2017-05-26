@@ -36,6 +36,9 @@ class Login extends React.Component {
   }
 
   render() {
+    if(this.props.account_status === LOGIN_STATE.LOGGED_IN) return (
+      <h3>You are now logged in.</h3>
+    )
     return (
       <Form horizontal onSubmit={this.login.bind(this)}>
         <FormGroup>
@@ -129,6 +132,9 @@ class Register extends React.Component {
   }
 
   render() {
+    if(this.props.account_status === LOGIN_STATE.LOGGED_IN) return (
+      <h3>You are now registered.</h3>
+    );
     return (
       <Form horizontal onSubmit={this.register.bind(this)}>
         <FormGroup>
